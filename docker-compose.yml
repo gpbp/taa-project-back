@@ -1,0 +1,38 @@
+version: '3'
+services: 
+   mysql-server:
+    container_name: mysql-server
+    image: mysql/mysql-server
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=wkdatabase
+      - MYSQL_USER=trung
+      - MYSQL_PASSWORD=trungpassword
+    volumes:
+      - ./data/:/var/lib/mysql
+    networks:
+      - wkapp-network
+    restart: always
+   wkapp-backend:
+    container_name: wkapp-backend
+    image: taa/wkapp
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql-server
+    ports:
+      - 8080:8080
+    environment:
+      - DATABASE_HOST=mysql-server
+      - DATABASE_USER=trung
+      - DATABASE_PASSWORD=trungpassword
+      - DATABASE_NAME=wkdatabase  
+      - DATABASE_PORT=3306
+    networks:
+      - wkapp-network
+    restart: always
+networks: 
+  wkapp-network:
